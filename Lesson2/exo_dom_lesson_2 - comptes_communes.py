@@ -1,34 +1,46 @@
 import requests
 import re
+from bs4 import BeautifulSoup
 
-def getComptesCommunes(url):
+def getComptesCommunes(url, year):
+
+	results = dict()
 
 	payload = {
 		'icom':'056',
 		'dep':'075',
 		'type':'BPS',
 		'param':'5',
-		'exercice':'2010'
+		'exercice': str(year)
 	}
 
-	htmlText = requests.get(url, data=payload).text
+	htmlText = requests.get(url, params=payload).text
 
-	regex = r"(<tr class=\"bleu\">).{5}"
+	soup = BeautifulSoup(htmlText, 'html.parser')
 
-	#regex = r"(<tr class=\"bleu\">)(.*?)(?=<td class=\"libellepetit G\">TOTAL DES PRODUITS DE FONCTIONNEMENT = A</td>)"
+	for line in soup.find_all('tr'):
+		libelle = line.find("td", class_="libellepetit G")
+		if( (libelle != None) ):
+			libelle = re.search(r'= ([A-D])$', libelle.string)
+			if( libelle != None):
+				results[str(libelle.group(1))] = {}
+				results[str(libelle.group(1))]['habitant'] = int(re.sub('[^1-9]','',line.contents[3].text))
+				results[str(libelle.group(1))]['strate'] = int(re.sub('[^1-9]','',line.contents[5].text))
 
-	#regex = r"(<div class=\"watch-view-count\">)(.*?)(?=vues)"
-
-	matches = re.search(regex, htmlText)
-	print(matches)
-
-	return matches[2]
-
-	#return htmlText
+	return results
+# 
+# def test(year):
+# 	yeah = {}
+# 	yeah[year] = 'yeah'
+# 	return yeah
 
 def main():
 
-	print(getComptesCommunes("http://alize2.finances.gouv.fr/communes/eneuro/detail.php"))
-
+	res = {}
+	for year in range(2010,2016):
+		stage = {}
+		stage[year] = getComptesCommunes("http://alize2.finances.gouv.fr/communes/eneuro/detail.php", year)
+	 	res = dict(res, **stage)
+	print(res)
 
 main()
