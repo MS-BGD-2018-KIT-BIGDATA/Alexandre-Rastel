@@ -67,15 +67,22 @@ n = 10
 splited = [top100[i:i + n] for i in range(0, len(top100), n)]
 
 res = get_matrix('|'.join(splited[0]))
-double_list = [res['origin_addresses']]
+double_list = []
 for row in res['rows']:
     list_row = []
     for element in row['elements']:
         list_row.append(element['distance']['text'])
     double_list.append(list_row)
-print(double_list)
 
-with open("matrix.csv", 'w+') as myfile:
-    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-    for row in double_list:
-        wr.writerow(row)
+final = pd.DataFrame(double_list, columns=res['origin_addresses'], index=res['origin_addresses'] )
+
+print(final)
+
+final.to_csv("matrix.csv")
+
+
+# with open("matrix.csv", 'w') as myfile:
+#     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+#     for row in double_list:
+#         wr.writerow(row)
+#     wr.close
