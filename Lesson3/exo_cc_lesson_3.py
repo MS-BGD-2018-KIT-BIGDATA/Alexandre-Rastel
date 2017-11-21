@@ -60,29 +60,25 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
+def main():
+    # print(get_matrix('sdbf'))
+    top100 = getTop100('https://fr.wikipedia.org/wiki/Liste_des_communes_de_France_les_plus_peupl%C3%A9es')
+    n = 10
+    splited = [top100[i:i + n] for i in range(0, len(top100), n)]
 
-# print(get_matrix('sdbf'))
-top100 = getTop100('https://fr.wikipedia.org/wiki/Liste_des_communes_de_France_les_plus_peupl%C3%A9es')
-n = 10
-splited = [top100[i:i + n] for i in range(0, len(top100), n)]
+    res = get_matrix('|'.join(splited[0]))
+    double_list = []
+    for row in res['rows']:
+        list_row = []
+        for element in row['elements']:
+            list_row.append(element['distance']['text'])
+        double_list.append(list_row)
 
-res = get_matrix('|'.join(splited[0]))
-double_list = []
-for row in res['rows']:
-    list_row = []
-    for element in row['elements']:
-        list_row.append(element['distance']['text'])
-    double_list.append(list_row)
+    final = pd.DataFrame(double_list, columns=res['origin_addresses'], index=res['origin_addresses'] )
 
-final = pd.DataFrame(double_list, columns=res['origin_addresses'], index=res['origin_addresses'] )
+    print(final)
 
-print(final)
-
-final.to_csv("matrix.csv")
+    final.to_csv("matrix.csv")
 
 
-# with open("matrix.csv", 'w') as myfile:
-#     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-#     for row in double_list:
-#         wr.writerow(row)
-#     wr.close
+main()

@@ -28,8 +28,7 @@ def randomJoke(url):
     return text
 
 
-url="https://api.icndb.com/jokes/random"
-
-current_joke=randomJoke(url)
-
-print(current_joke)
+if __name__ == '__main__':
+    url="https://api.icndb.com/jokes/random"
+    current_joke=randomJoke(url)
+    print(current_joke)

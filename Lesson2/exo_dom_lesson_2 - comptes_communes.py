@@ -3,7 +3,10 @@ import re
 from bs4 import BeautifulSoup
 
 def getComptesCommunes(url, year):
-
+	""" fetches public finacial data
+		from the url given
+		outputs DataFrame
+	"""
 	results = dict()
 
 	payload = {
@@ -28,11 +31,7 @@ def getComptesCommunes(url, year):
 				results[str(libelle.group(1))]['strate'] = int(re.sub('[^1-9]','',line.contents[5].text))
 
 	return results
-# 
-# def test(year):
-# 	yeah = {}
-# 	yeah[year] = 'yeah'
-# 	return yeah
+
 
 def main():
 
@@ -40,7 +39,8 @@ def main():
 	for year in range(2010,2016):
 		stage = {}
 		stage[year] = getComptesCommunes("http://alize2.finances.gouv.fr/communes/eneuro/detail.php", year)
-	 	res = dict(res, **stage)
+		res = dict(res, **stage)
 	print(res)
 
-main()
+if __name__ == '__main__':
+	main()
